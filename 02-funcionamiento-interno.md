@@ -1,78 +1,100 @@
-# 2. ¿Cómo funciona Kubernetes por dentro?
+# ¿Cómo funciona Kubernetes por dentro?
 
-Para comprender realmente Kubernetes, es fundamental conocer cómo se organiza internamente, qué componentes lo conforman y cómo interactúan entre ellos. Esta sección explica la arquitectura base del clúster y los servicios esenciales que lo hacen funcionar.
+Comprender Kubernetes implica entender **cómo está diseñado internamente**, qué componentes lo forman y cómo colaboran para mantener el clúster en funcionamiento.
 
----
+## etcd: la base de datos del estado
 
-## 2.1. etcd: la base de datos de Kubernetes
+`etcd` es una **base de datos distribuida clave-valor** que almacena absolutamente todo el **estado del clúster**.
 
-`etcd` es una **base de datos clave-valor distribuida** que actúa como el **almacén central** de todo el estado del clúster.
+Qué guarda:
 
-- Almacena el estado deseado: Pods, ConfigMaps, Secrets, Deployments, etc.
-- Todos los cambios en Kubernetes pasan por la API y se guardan en `etcd`.
-- Es altamente consistente y tolerante a fallos.
+* Especificación completa de recursos (Pods, Services, Deployments, Secrets, ConfigMaps…)
+* Estado deseado del clúster
+* Información de control y coordinación
 
-> Ejemplo: cuando aplicamos un manifiesto YAML con `kubectl apply`, ese archivo se convierte en una petición a la API de Kubernetes, que registra la información en `etcd`.
+Por qué es crítico:
 
----
+* Es **altamente consistente** (usa Raft para consenso)
+* Es el "punto único de verdad" del clúster
+* Si `etcd` falla, el clúster no puede operar
 
-## 2.2. Componentes del plano de control (Control Plane)
+Ejemplo claro:
 
-El plano de control orquesta el comportamiento global del clúster. Sus componentes principales son:
+> Cuando haces `kubectl apply -f app.yaml`, esa declaración se guarda en `etcd`. El resto de componentes trabajan para hacerla realidad.
 
-| Componente                  | Descripción                                                                 |
-|----------------------------|-----------------------------------------------------------------------------|
-| `kube-apiserver`           | El **punto de entrada del clúster**. Expone la API REST de Kubernetes.     |
-| `etcd`                     | La base de datos donde se guarda el estado deseado del clúster.            |
-| `kube-scheduler`           | Decide en qué nodo se ejecutará cada Pod nuevo.                            |
-| `kube-controller-manager`  | Ejecuta los controladores que supervisan y ajustan el estado del clúster.  |
-| `cloud-controller-manager` | Gestiona recursos específicos del proveedor cloud (volúmenes, LB, etc.).   |
+## Componentes del Control Plane
 
----
+El **Control Plane** es el cerebro del clúster. Orquesta, decide, valida y asegura que el estado deseado se cumpla.
 
-## 2.3. Componentes de los nodos (Worker Nodes)
+### Componentes principales del plano de control
 
-Los nodos trabajadores son los encargados de **ejecutar los contenedores**. Sus componentes son:
+| Componente                   | Descripción clara y simple                                                                                  |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **kube-apiserver**           | Punto central de comunicación. Todo pasa por su API REST. Valida peticiones y expone el estado del clúster. |
+| **etcd**                     | Base de datos distribuida donde vive el estado del clúster.                                                 |
+| **kube-scheduler**           | Observa Pods pendientes y decide en qué nodo ejecutarlos (según recursos, afinidades, taints…).             |
+| **kube-controller-manager**  | Ejecuta controladores que ajustan el estado real al deseado (ReplicaSet, Node, Endpoint, Job…).             |
+| **cloud-controller-manager** | Integra Kubernetes con proveedores cloud para gestionar volúmenes, balanceadores, nodos, etc.               |
 
-| Componente        | Función                                                                 |
-|-------------------|-------------------------------------------------------------------------|
-| `kubelet`         | Agente que comunica el nodo con el plano de control y ejecuta Pods.     |
-| `kube-proxy`      | Configura reglas de red y balanceo de carga para los servicios.         |
-| `container runtime` | Es quien ejecuta realmente los contenedores (Docker, Containerd, etc.). |
+Idea clave:
 
----
+**El plano de control no ejecuta aplicaciones. Solo dirige y decide.**
 
-## 2.4. Pods del sistema (`kube-system`)
+## Componentes de los Worker Nodes
 
-El namespace `kube-system` contiene los Pods que aseguran el funcionamiento básico del clúster:
+Los **nodos trabajadores** son las máquinas que ejecutan tus aplicaciones.
 
-| Pod / Add-on               | Función                                                              |
-|---------------------------|----------------------------------------------------------------------|
-| `coredns`                 | Servicio DNS interno para resolver nombres dentro del clúster.       |
-| `kube-proxy`             | Reglas de red y forwarding del tráfico interno.                      |
-| `metrics-server` (opcional) | Permite el escalado automático (HPA) mediante métricas.           |
-| `kube-apiserver`, `scheduler`, etc. | A menudo ejecutados como Pods si usas herramientas como kubeadm. |
+### Sus componentes principales
 
----
+| Componente            | Función                                                                                 |
+| --------------------- | --------------------------------------------------------------------------------------- |
+| **kubelet**           | Agente que se comunica con la API y asegura que los Pods se ejecuten según lo ordenado. |
+| **kube-proxy**        | Gestiona las reglas de red internas y el forwarding del tráfico entre Pods y Services.  |
+| **container runtime** | Responsable de ejecutar contenedores (containerd, CRI-O…).                              |
 
-## 2.5. Seguridad y autenticación
+Cómo funciona el proceso:
 
-El `kube-apiserver` también gestiona:
+1. El scheduler asigna un Pod a un nodo.
+2. El `kubelet` del nodo recibe la orden.
+3. El runtime ejecuta los contenedores.
+4. El `kubelet` informa del estado al apiserver.
 
-- Autenticación de usuarios (certificados, tokens, OIDC, etc.).
-- Control de acceso mediante **RBAC** (roles y permisos).
-- Validación de peticiones y autorización de acciones.
+## Pods del sistema (`kube-system`)
 
----
+El namespace `kube-system` contiene los **servicios esenciales** de Kubernetes.
 
-## 2.6. Comunicación entre componentes
+| Componente                    | Función                                                          |
+| ----------------------------- | ---------------------------------------------------------------- |
+| **coredns**                   | Sistema DNS interno para resolución de nombres entre Pods.       |
+| **kube-proxy**                | Gestiona la red de los Services.                                 |
+| **metrics-server**            | Proporciona métricas de CPU/RAM al HPA para escalado automático. |
+| Componentes del control plane | En instalaciones como kubeadm se ejecutan como Pods.             |
 
-El funcionamiento interno se basa en el principio de **estado deseado vs estado real**.
+Estos Pods garantizan que Kubernetes tenga capacidad de red, DNS, métricas y control.
 
-1. El usuario define un estado deseado (por ejemplo, 3 réplicas de una app).
-2. El `kube-controller-manager` compara ese estado con el real (almacenado en etcd).
-3. Si detecta una diferencia, actúa: por ejemplo, crea o elimina Pods automáticamente.
+## Seguridad en Kubernetes
 
----
+El `kube-apiserver` es también el responsable de toda la seguridad.
 
-Kubernetes funciona como un **sistema reactivo** que busca siempre alinear el estado real con el deseado, sin intervención directa del usuario una vez configurado.
+Incluye:
+
+* **Autenticación** (tokens, certificados, OIDC…)
+* **Autorización (RBAC)** para controlar qué puede hacer cada usuario
+* **Admission controllers** que validan o mutan peticiones
+
+Idea clave:
+Cada petición a la API **pasa por autenticación, autorización y validación**.
+
+## Cómo se coordinan todos los componentes
+
+Kubernetes funciona como un sistema **reactivo** y **de estado deseado**.
+
+Flujo simplificado:
+
+1. El usuario define un estado deseado (por ejemplo, "quiero 3 réplicas").
+2. La API lo guarda en `etcd`.
+3. El controller-manager detecta diferencias entre **estado deseado** y **estado real**.
+4. Ajusta el clúster: crea Pods, elimina Pods, programa trabajo, etc.
+5. Los nodos ejecutan y reportan su estado.
+
+Kubernetes trabaja continuamente para que el estado real coincida con el declarado, **sin intervención humana**.
