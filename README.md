@@ -31,4 +31,15 @@
     - ¿Qué son los Namespaces?
     - ¿Por qué usar Namespaces?
     - Creación y gestión de Namespaces
-    - Ejemplos prácticos
+    - Ejemplos básicos con Namespaces
+    - Buenas prácticas con Namespaces
+
+5. [Pods en Kubernetes](./05-pods-en-k8s.md)
+
+    - ¿Qué es un Pod?
+    - ¿En qué se diferencia un Pod de un contenedor?
+    - Creación y gestión de Pods
+    - Estados comunes de un Pod
+    - ¿Qué pasa cuando un Pod muere?
+    - Ejemplos básicos con Pods
+    - Buenas prácticas con Pods

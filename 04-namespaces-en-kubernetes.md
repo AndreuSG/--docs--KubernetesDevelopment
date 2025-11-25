@@ -88,8 +88,6 @@ kubectl delete namespace desarrollo
 ⚠️ **Ojo:**
 Eliminar un namespace elimina *todos* sus recursos. Pods, Services, Deployments, etc.
 
----
-
 ## Cambiar el namespace por defecto
 
 Para trabajar más cómodamente sin tener que usar `-n` todo el rato:
@@ -104,16 +102,21 @@ Ver el namespace activo:
 kubectl config view --minify | grep namespace
 ```
 
----
+Si queremos volver al namespace `default`:
 
-## 5.7. Buenas prácticas con namespaces
+```bash
+kubectl config set-context --current --namespace=default
+```
+
+El namespace `default` es el que se usa si no especificas ninguno. Pero cuidado, el namespace `default` no es ningun entorno especial, es solo un namespace más.
+
+## Buenas prácticas con namespaces
 
 * Un namespace para cada entorno: `dev`, `pre`, `prod`.
+* O crear un namespace para cada proyecto u organización.
 * Usar ResourceQuota para limitar recursos por equipo.
 * Usar RBAC para separar accesos entre equipos.
 * No desplegar apps en `default`.
 * Mantener `kube-system` solo para componentes internos.
-
----
 
 Los namespaces son el punto de partida para estructurar un clúster real. Ahora que conoces cómo aislar recursos, el siguiente paso natural es profundizar en los Pods y, después, avanzar hacia Deployments, Services e Ingress.
