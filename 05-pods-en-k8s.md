@@ -124,8 +124,11 @@ kubectl delete pod nginx-pod
 | -------------------- | ------------------------------------------------------------- |
 | **Pending**          | Se ha enviado el Pod pero aún no asignado a un nodo           |
 | **Running**          | El contenedor está ejecutándose correctamente                 |
-| **CrashLoopBackOff** | El contenedor arranca, falla, arranca…                        |
+| **Succeeded**        | El contenedor terminó correctamente (Jobs)                    |
+| **Failed**           | El contenedor terminó con error                               |
+| **CrashLoopBackOff** | El contenedor falla repetidamente al arrancar                 |
 | **ImagePullBackOff** | No puede descargar la imagen (error en credenciales/registro) |
+| **Unknown**          | El estado del Pod no se puede determinar (problema de red)    |
 | **Completed**        | Se ejecutó y finalizó correctamente (Jobs)                    |
 
 ## ¿Qué pasa cuando un Pod muere?

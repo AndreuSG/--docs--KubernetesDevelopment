@@ -43,3 +43,11 @@
     - ¿Qué pasa cuando un Pod muere?
     - Ejemplos básicos con Pods
     - Buenas prácticas con Pods
+
+6. [Describe pods](./06-describe-pods.md)
+
+    - ¿Qué es `kubectl describe`?
+    - Uso de `kubectl describe` con Pods
+    - Interpretación de la salida
+    - Ejemplos prácticos
+    - Buenas prácticas al usar `kubectl describe`
