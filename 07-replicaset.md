@@ -1,6 +1,6 @@
 # ReplicaSets en Kubernetes
 
-Los **ReplicaSets** son un recurso fundamental en Kubernetes, pero rara vez se gestionan directamente. Su función es asegurar que siempre exista el **número deseado de Pods** ejecutándose. Aunque forman parte esencial del funcionamiento de los Deployments, normalmente no trabajamos con ellos de forma manual.
+Los **ReplicaSets** son un recurso fundamental en Kubernetes, pero rara vez se gestionan directamente, normalmente se manejan a través de Deployments. Su función es asegurar que siempre exista el **número deseado de Pods** ejecutándose.
 
 Este documento explica qué son, cómo funcionan y por qué se utilizan principalmente como parte interna de un Deployment.
 
@@ -22,7 +22,7 @@ En resumen:
 
 ---
 
-## 7.2. ¿Para qué sirve un ReplicaSet?
+## ¿Para qué sirve un ReplicaSet?
 
 Los ReplicaSets se encargan de:
 
@@ -36,12 +36,12 @@ Pero ojo:
 
 ---
 
-## 7.3. ¿Por qué normalmente no usamos ReplicaSets directamente?
+## ¿Por qué normalmente no usamos ReplicaSets directamente?
 
 Porque los **Deployments** son una capa superior que añade funciones esenciales:
 
-* Rollouts progresivos (actualizaciones sin downtime)
-* Rollbacks automáticos
+* Rollouts progresivos (actualizaciones sin downtime) llamados *rolling updates*
+* Rollbacks automáticos en caso de fallos
 * Estrategias de despliegue
 * Historial de versiones
 * Gestión segura de nueva imagen
@@ -59,7 +59,7 @@ Por eso, la práctica profesional es:
 
 ---
 
-## 7.4. ¿Cómo funciona internamente un ReplicaSet?
+## ¿Cómo funciona internamente un ReplicaSet?
 
 Un ReplicaSet funciona comparando:
 
@@ -80,13 +80,12 @@ Si un Pod muere:
 
 ---
 
-## 7.5 Ejemplo básico de ReplicaSet
+## Ejemplo básico de ReplicaSet
 
 Archivo `nginx-rs.yaml`:
 
 ```yaml
 apiVersion: apps/v1
-type: ReplicaSet
 kind: ReplicaSet
 metadata:
   name: nginx-rs
@@ -115,12 +114,27 @@ Ver ReplicaSets:
 
 ```bash
 kubectl get rs
+
+## Resultado esperado:
+NAME       DESIRED   CURRENT   READY   AGE
+nginx-rs   3         3         3       32s
+```
+
+Ver Pods:
+
+```bash
+kubectl get pods -l app=nginx
+
+## Resultado esperado:
+NAME             READY   STATUS    RESTARTS   AGE
+nginx-rs-49lwv   1/1     Running   0          14s
+nginx-rs-4js9t   1/1     Running   0          14s
+nginx-rs-l5rzd   1/1     Running   0          14s
 ```
 
 ---
 
-## 7.6. Relación entre Deployment, ReplicaSet y Pods
-
+## Relación entre Deployment, ReplicaSet y Pods
 Cuando creas un Deployment, Kubernetes hace automáticamente:
 
 1. Crear un ReplicaSet
@@ -157,7 +171,7 @@ kubectl describe rs nombre-del-rs
 (⚠️ No recomendado si existe un Deployment asociado)
 
 ```bash
-kubectl scale rs nombre --replicas=5
+kubectl scale rs nombre --replicas=N
 ```
 
 ### Eliminar un ReplicaSet
@@ -168,7 +182,7 @@ kubectl delete rs nombre-del-rs
 
 ---
 
-## 7.8. Buenas prácticas
+## Buenas prácticas
 
 * No crear ReplicaSets directamente (usar Deployments)
 * Solo manipularlos para fines de aprendizaje o debugging
