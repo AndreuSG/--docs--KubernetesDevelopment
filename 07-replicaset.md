@@ -152,7 +152,7 @@ El Deployment es el que manda. El ReplicaSet solo ejecuta.
 
 ---
 
-## 7.7. Comandos útiles
+## Comandos útiles
 
 ### Ver ReplicaSets
 

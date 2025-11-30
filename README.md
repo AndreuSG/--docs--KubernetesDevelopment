@@ -52,3 +52,25 @@
     - Consejos finales al usar `kubectl describe`
 
 7. [ReplicaSets en Kubernetes](./07-replicaset.md)
+
+    - ¿Qué es un ReplicaSet?
+    - ¿Para qué sirve un ReplicaSet?
+    - ¿Por qué normalmente no usamos ReplicaSets directamente?
+    - ¿Cómo funciona internamente un ReplicaSet?
+    - Ejemplo básico de un ReplicaSet
+    - Relación entre Deployment, ReplicaSet y Pods
+    - Comandos útiles
+    - Buenas prácticas
+
+8. [Deployments en Kubernetes](./08-deployment.md)
+    - ¿Qué es un Deployment?
+    - Relación Deployment → ReplicaSet → Pod
+    - Crear un Deployment
+    - Actualizaciones (Rollouts)
+    - Rollbacks (volver atrás)
+    - Estrategias de despliegue
+    - Escalado de un Deployment
+    - Describir un Deployment
+    - Actualización mediante editar YAML
+    - Eliminar un Deployment
+    - Buenas prácticas
