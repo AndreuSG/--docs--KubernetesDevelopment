@@ -117,7 +117,7 @@ Ejecutó y terminó (normal en Jobs).
 
 Aquí siempre aparece un `Reason` explicando el porqué.
 
-### 6.3.4. Probes (liveness, readiness, startup)
+### Probes (liveness, readiness, startup)
 
 Si un probe falla, lo verás aquí.
 
@@ -173,56 +173,7 @@ Si hay problemas, verás avisos como:
 * `Unhealthy`
 * `Probe failed`
 
-## 6.4. Ejemplos de problemas reales detectables con `describe`
-
-### Imagen incorrecta
-
-```
-State:      Waiting
-Reason:     ErrImagePull
-```
-
-Solución: La imagen no existe o el registro da error.
-
-### CrashLoopBackOff
-
-```
-State:      Waiting
-Reason:     CrashLoopBackOff
-```
-
-El contenedor arranca, se muere, arranca…
-
-Causas típicas:
-
-* Error en la app
-* Falta de variables env
-* Probes mal configurados
-* Puerto incorrecto
-
-### Problemas con probes
-
-```
-Readiness probe failed
-```
-
-La app no está lista.
-
----
-
-### Fallos de scheduling
-
-```
-FailedScheduling: 0/1 nodes are available
-```
-
-Motivos:
-
-* Falta de CPU/RAM
-* Taints
-* Affinity incorrecta
-
-## Buenas prácticas
+## Consejos finales
 
 * Mirar SIEMPRE los eventos al final
 * Revisar número de reinicios

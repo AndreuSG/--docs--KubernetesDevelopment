@@ -49,5 +49,6 @@
     - ¿Qué es `kubectl describe`?
     - Uso de `kubectl describe` con Pods
     - Interpretación de la salida
-    - Ejemplos prácticos
-    - Buenas prácticas al usar `kubectl describe`
+    - Consejos finales al usar `kubectl describe`
+
+7. [ReplicaSets en Kubernetes](./07-replicaset.md)
