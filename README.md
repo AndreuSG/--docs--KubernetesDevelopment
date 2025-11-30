@@ -74,3 +74,12 @@
     - Actualización mediante editar YAML
     - Eliminar un Deployment
     - Buenas prácticas
+
+9. [ConfigMaps en Kubernetes](./09-configmap.md)
+
+    - ¿Qué es un ConfigMap?
+    - Formas de crear un ConfigMap
+    - ¿Cómo se usa un ConfigMap dentro de un Pod?
+    - Actualizar ConfigMaps
+    - Cosas que suelen romperse (troubleshooting)
+    - Buenas prácticas
