@@ -112,8 +112,18 @@ spec:
 
 ## ✔️ 3) **LoadBalancer**
 
-Usado en entornos cloud (AWS/Azure/GCP).
+Usado en entornos cloud (AWS/Azure/GCP) o on-prem (datacenter propio).
 Crea un balanceador externo que apunta al NodePort.
+
+En on-prem, Kubernetes no trae un LoadBalancer por defecto, así que debes instalar tú un proveedor de LoadBalancer.
+
+El estándar en el mundo on-prem es:
+
+MetalLB → el LoadBalancer para datacenters propios
+
+MetalLB implementa la API de LoadBalancer dentro de tu red local.
+
+Ejemplo de Service LoadBalancer:
 
 ```yaml
 kind: Service
