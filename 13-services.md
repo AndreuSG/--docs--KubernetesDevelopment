@@ -1,4 +1,4 @@
-# 13. Services en Kubernetes
+# Services en Kubernetes
 
 Los **Services** son el mecanismo fundamental de Kubernetes para exponer aplicaciones y permitir que los Pods reciban tráfico de forma estable, incluso cuando se recrean, escalan o cambian de IP.
 
@@ -6,9 +6,9 @@ Los Pods son efímeros, cambian de IP constantemente y pueden morir en cualquier
 
 Este capítulo explica todos los tipos de Services, cómo funcionan internamente, qué son los Endpoints y cómo se integran con los Deployments y ReplicaSets.
 
----
 
-# 13.1. ¿Qué es un Service?
+
+## ¿Qué es un Service?
 
 Un **Service** es un recurso de Kubernetes que proporciona:
 
@@ -19,9 +19,8 @@ Un **Service** es un recurso de Kubernetes que proporciona:
 
 Un Service "apunta" a Pods mediante **labels**, y automáticamente envía tráfico solo a los Pods sanos.
 
----
 
-# 13.2. ¿Por qué los Services son necesarios?
+## ¿Por qué los Services son necesarios?
 
 Porque los Pods:
 
@@ -32,32 +31,33 @@ Porque los Pods:
 
 El Service proporciona:
 
-### ✔️ **Estabilidad**
+### Estabilidad
 
 Tu aplicación tiene siempre el mismo punto de acceso.
 
-### ✔️ **Descubrimiento automático**
+### Descubrimiento automático
 
 Los Pods se añaden/eliminan del Service sin intervención manual.
 
-### ✔️ **Balanceo de carga**
+### Balanceo de carga
 
 Distribuye tráfico entre réplicas.
 
-### ✔️ **Integración con readiness probes**
+### Integración con readiness probes
 
 Si un Pod no está listo, el Service no le envía tráfico.
 
----
 
-# 13.3. Tipos de Services
+
+## Tipos de Services
 
 Kubernetes ofrece tres tipos principales:
 
-## ✔️ 1) **ClusterIP** (por defecto)
+### ClusterIP (por defecto)
 
-Expone la aplicación **dentro del clúster**.
-Ideal para comunicación entre microservicios.
+Expone la aplicación **dentro del clúster**. Ideal para comunicación entre microservicios.
+
+En este ejemplo, creamos un Service que apunta a Pods con el label `app: web` en el puerto 80. Por defecto, el tipo es `ClusterIP`.
 
 ```yaml
 kind: Service
@@ -79,12 +79,12 @@ spec:
 * Backends
 * Bases de datos internas
 
----
 
-## ✔️ 2) **NodePort**
+### NodePort
 
-Abre un puerto en **todos los nodos** del clúster.
-Permite acceder a la app desde fuera, pero no crea balanceo externo.
+Abre un puerto en **todos los nodos** del clúster. Permite acceder a la app desde fuera, pero no crea balanceo externo.
+
+En este ejemplo, el Service expone el puerto 80 de los Pods con el label `app: web` en el puerto 30080 de cada nodo.
 
 ```yaml
 kind: Service
@@ -108,22 +108,57 @@ spec:
 
 ⚠️ No recomendado para producción.
 
----
 
-## ✔️ 3) **LoadBalancer**
+### LoadBalancer
 
 Usado en entornos cloud (AWS/Azure/GCP) o on-prem (datacenter propio).
-Crea un balanceador externo que apunta al NodePort.
 
-En on-prem, Kubernetes no trae un LoadBalancer por defecto, así que debes instalar tú un proveedor de LoadBalancer.
+Un **Service de tipo `LoadBalancer`** expone una aplicación fuera del clúster mediante un **balanceador de carga externo**.
 
-El estándar en el mundo on-prem es:
+Kubernetes **no implementa el load balancer**, solo define la API (`type: LoadBalancer`). 
 
-MetalLB → el LoadBalancer para datacenters propios
+La implementación depende de:
 
-MetalLB implementa la API de LoadBalancer dentro de tu red local.
+- Un **cloud provider** (AWS, Azure, GCP)
+- O un proveedor **on-prem** (ej. MetalLB)
+
+#### Entornos Cloud
+
+En AWS / Azure / GCP:
+
+- `type: LoadBalancer` crea un load balancer real
+- Se conecta automáticamente al NodePort
+- Se asigna una IP pública o DNS
+- Todo es transparente para el usuario
+
+#### Entornos On-Prem
+
+Kubernetes no incluye LoadBalancer por defecto.
+
+**MetalLB (estándar on-prem)**
+
+MetalLB:
+- Implementa la API `LoadBalancer`
+- Asigna una IP de la red local
+- Redirige tráfico al NodePort
+
+#### Flujo de tráfico
+
+```
+Internet
+↓
+LoadBalancer externo
+↓
+NodePort (en los nodos)
+↓
+ClusterIP
+↓
+Pods
+```
 
 Ejemplo de Service LoadBalancer:
+
+En este ejemplo, el Service crea un LoadBalancer que expone el puerto 80 de los Pods con el label `app: web`.
 
 ```yaml
 kind: Service
@@ -153,13 +188,23 @@ minikube service web-lb
 
 para obtener una URL accesible.
 
----
+## Relación LoadBalancer ↔ NodePort
 
-# 13.4. ¿Cómo funciona un Service internamente?
+- Un Service `LoadBalancer` **SIEMPRE crea un NodePort**
+- El NodePort es el **punto de entrada real al clúster**
+- No es necesario definirlo manualmente
+- El LoadBalancer redirige tráfico a ese NodePort
+
+> NodePort no es una alternativa a LoadBalancer,  
+> es el mecanismo que LoadBalancer utiliza internamente.
+
+
+
+## ¿Cómo funciona un Service internamente?
 
 Cuando creas un Service, Kubernetes crea automáticamente un objeto llamado:
 
-### ✔️ **Endpoints** (o EndpointSlice)
+### Endpoints
 
 Este objeto contiene **las IPs de los Pods** que coinciden con el selector.
 
@@ -180,13 +225,13 @@ Salida:
 El Service usa estos endpoints para distribuir tráfico.
 
 Si un Pod muere → el endpoint desaparece.
+
 Si un Pod nuevo nace → aparece en endpoints.
 
 Todo esto ocurre automáticamente.
 
----
 
-# 13.5. Selector de labels (clave del Service)
+## Selector de labels (clave del Service)
 
 Tu Service "apunta" a Pods que tengan ciertos labels.
 
@@ -211,19 +256,18 @@ kubectl get endpoints web-service
 # EMPTY
 ```
 
----
 
-# 13.6. `port`, `targetPort` y `nodePort`
+## `port`, `targetPort` y `nodePort`
 
-### ✔️ `port`
+### `port`
 
 El puerto del **Service** (IP virtual).
 
-### ✔️ `targetPort`
+### `targetPort`
 
 El puerto del **contenedor**.
 
-### ✔️ `nodePort`
+### `nodePort`
 
 El puerto del **nodo** (solo en NodePort).
 
@@ -233,9 +277,8 @@ Ejemplo completo:
 Navegador → Node (nodePort=30080) → Service (port=80) → Pod (targetPort=80)
 ```
 
----
 
-# 13.7. DNS interno de Kubernetes
+## DNS interno de Kubernetes
 
 Cada Service genera automáticamente un nombre DNS:
 
@@ -251,9 +294,8 @@ web-service.desarrollo.svc.cluster.local
 
 Los Pods pueden comunicarse entre sí sin usar IPs.
 
----
 
-# 13.8. Services y Readiness Probes
+## Services y Readiness Probes
 
 Los Services **solo envían tráfico** a Pods que estén:
 
@@ -267,11 +309,8 @@ Si el readiness falla:
 
 Esto es clave para rollouts sin downtime.
 
-(Leer Probes en el siguiente capítulo.)
 
----
-
-# 13.9. Ver Services y Endpoints
+## Ver Services y Endpoints
 
 ```bash
 kubectl get svc
@@ -279,17 +318,16 @@ kubectl get endpoints
 kubectl describe svc web-service
 ```
 
----
 
-# 13.10. Common Troubleshooting
+## Common Troubleshooting
 
-### ❌ El Service no funciona
+### El Service no funciona
 
 * Selector incorrecto
 * El Pod no expone el puerto
 * Readiness probe fallando
 
-### ❌ Service sin endpoints
+### Service sin endpoints
 
 ```bash
 kubectl get endpoints web-service
@@ -297,14 +335,13 @@ kubectl get endpoints web-service
 
 Si está vacío → problema de labels.
 
-### ❌ NodePort inaccesible
+### NodePort inaccesible
 
 * El firewall del nodo lo bloquea
 * Intentas acceder a la IP equivocada
 
----
 
-# 13.11. Buenas prácticas
+## Buenas prácticas
 
 * Siempre usar **labels coherentes**
 * Exponer servicios internos como ClusterIP
@@ -312,8 +349,4 @@ Si está vacío → problema de labels.
 * Un solo Service por funcionalidad
 * Usar readiness probes para tráfico fiable
 * Mantener Deployments y Services bien separados
-
----
-
-Los Services son el puente entre tus Pods y el tráfico interno/externo del clúster.
-En el siguiente capítulo veremos los **Probes**, que permiten a Kubernetes saber cuándo un Pod está listo o necesita reiniciarse.
+* Monitorizar endpoints y tráfico
