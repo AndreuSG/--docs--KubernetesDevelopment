@@ -146,7 +146,7 @@ Cuando eso pasa, Kubernetes:
 
 Por eso **nunca se despliegan aplicaciones en Pods sueltos en producción**.
 
-Los Pods reales se gestionan a través de Deployments.
+Los Pods reales se gestionan a través de Deployments que por defecto tienen un restartPolicy always configurado.
 
 ## Buenas prácticas con Pods
 
