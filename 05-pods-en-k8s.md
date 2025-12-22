@@ -118,6 +118,87 @@ kubectl exec -it nginx-pod -- bash
 kubectl delete pod nginx-pod
 ```
 
+## Comandos de troubleshooting
+
+### Ver Pods con sus etiquetas
+
+```bash
+kubectl get pods --show-labels
+```
+
+### Ver eventos del cluster (muy útil para debuggear)
+
+```bash
+kubectl get events --sort-by='.lastTimestamp'
+```
+
+### Ver eventos de un Pod específico
+
+```bash
+kubectl get events --field-selector involvedObject.name=nginx-pod
+```
+
+### Ver logs del contenedor anterior (si crasheó)
+
+```bash
+kubectl logs nginx-pod --previous
+```
+
+### Seguir logs en tiempo real
+
+```bash
+kubectl logs -f nginx-pod
+```
+
+### Ver logs de un contenedor específico (en Pods multi-contenedor)
+
+```bash
+kubectl logs nginx-pod -c nombre-contenedor
+```
+
+### Ver uso de recursos (CPU/RAM)
+
+```bash
+kubectl top pods
+```
+
+### Filtrar Pods por estado
+
+```bash
+# Pods en error
+kubectl get pods --field-selector status.phase=Failed
+
+# Pods en ejecución
+kubectl get pods --field-selector status.phase=Running
+
+# Pods pendientes
+kubectl get pods --field-selector status.phase=Pending
+```
+
+### Ver la definición completa del Pod en YAML
+
+```bash
+kubectl get pod nginx-pod -o yaml
+```
+
+### Ver la definición en formato JSON (más fácil para scripts)
+
+```bash
+kubectl get pod nginx-pod -o json
+```
+
+### Ver información resumida en formato personalizado
+
+```bash
+kubectl get pods -o custom-columns=NAME:.metadata.name,STATUS:.status.phase,IP:.status.podIP,NODE:.spec.nodeName
+```
+
+### Forzar eliminación de un Pod que no responde
+
+```bash
+kubectl delete pod nginx-pod --force --grace-period=0
+```
+
 ## Estados comunes de un Pod
 
 | Estado               | Significado                                                   |

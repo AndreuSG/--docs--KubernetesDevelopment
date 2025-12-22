@@ -83,3 +83,29 @@
     - Actualizar ConfigMaps
     - Cosas que suelen romperse (troubleshooting)
     - Buenas prácticas
+
+10. [Secrets en Kubernetes](./10-secrets.md)
+
+    - ¿Qué es un Secret?
+    - ¿Por qué no usar ConfigMaps para datos sensibles?
+    - Crear un Secret
+    - Ver Secrets
+    - Usar Secrets dentro de un Pod
+    - Actualizar un Secret
+    - Seguridad de los Secrets
+    - Cosas que suelen romperse (troubleshooting)
+    - Buenas prácticas
+
+11. [Volúmenes en Kubernetes](./11-volumes.md)
+
+    - ¿Qué es un volumen en Kubernetes?
+    - Tipos de volúmenes nativos (sin PV/PVC)
+    - Estructura básica de un volumen en un Pod
+    - Montar volúmenes desde ConfigMaps
+    - Ejemplo práctico: Inyectar configuración de Nginx
+    - Montar volúmenes desde Secrets
+    - Volúmenes proyectados (mezcla de ConfigMap + Secret)
+    - Ciclo de vida de los volúmenes
+    - Casos de uso reales
+    - Buenas prácticas
+
