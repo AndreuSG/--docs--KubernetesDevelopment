@@ -4,7 +4,7 @@ Los **ReplicaSets** son un recurso fundamental en Kubernetes, pero rara vez se g
 
 Este documento explica qué son, cómo funcionan y por qué se utilizan principalmente como parte interna de un Deployment.
 
----
+
 
 ## ¿Qué es un ReplicaSet?
 
@@ -20,7 +20,7 @@ En resumen:
 
 > **Un ReplicaSet garantiza que existan “N” Pods sanos en todo momento.**
 
----
+
 
 ## ¿Para qué sirve un ReplicaSet?
 
@@ -34,7 +34,7 @@ Pero ojo:
 
 > Aunque un ReplicaSet puede usarse solo, **no es recomendable**. Los Deployments lo gestionan automáticamente.
 
----
+
 
 ## ¿Por qué normalmente no usamos ReplicaSets directamente?
 
@@ -57,7 +57,7 @@ Por eso, la práctica profesional es:
 
 > **Utilizar Deployments, no ReplicaSets directamente.**
 
----
+
 
 ## ¿Cómo funciona internamente un ReplicaSet?
 
@@ -78,7 +78,7 @@ Si un Pod muere:
 
 * Crea uno nuevo
 
----
+
 
 ## Ejemplo básico de ReplicaSet
 
@@ -132,7 +132,7 @@ nginx-rs-4js9t   1/1     Running   0          14s
 nginx-rs-l5rzd   1/1     Running   0          14s
 ```
 
----
+
 
 ## Relación entre Deployment, ReplicaSet y Pods
 Cuando creas un Deployment, Kubernetes hace automáticamente:
@@ -150,7 +150,7 @@ Cadena completa:
 
 El Deployment es el que manda. El ReplicaSet solo ejecuta.
 
----
+
 
 ## Comandos útiles
 
@@ -180,7 +180,7 @@ kubectl scale rs nombre --replicas=N
 kubectl delete rs nombre-del-rs
 ```
 
----
+
 
 ## Buenas prácticas
 

@@ -280,7 +280,20 @@ Navegador → Node (nodePort=30080) → Service (port=80) → Pod (targetPort=80
 
 ## DNS interno de Kubernetes
 
-Cada Service genera automáticamente un nombre DNS:
+El **DNS interno de Kubernetes** es uno de los pilares fundamentales de la comunicación entre aplicaciones dentro del clúster. Gracias a él, los Pods pueden comunicarse entre sí **sin usar direcciones IP**, lo que abstrae completamente la naturaleza dinámica y efímera de Kubernetes.
+
+Este servicio DNS está proporcionado normalmente por **CoreDNS**, que se ejecuta dentro del clúster (en el namespace `kube-system`) y se integra directamente con el estado del API Server.
+
+### ¿Qué resuelve el DNS interno de Kubernetes?
+
+El DNS interno crea registros automáticamente para distintos recursos del clúster, siendo los **Services** el caso principal y recomendado.
+
+> Regla de oro:
+> **En Kubernetes, los Pods se comunican con Services, no con Pods.**
+
+## DNS para Services (caso principal)
+
+Cada **Service** crea automáticamente un nombre DNS estable con el siguiente formato:
 
 ```
 <service-name>.<namespace>.svc.cluster.local
@@ -292,8 +305,60 @@ Ejemplo:
 web-service.desarrollo.svc.cluster.local
 ```
 
-Los Pods pueden comunicarse entre sí sin usar IPs.
+Desde un Pod dentro del mismo namespace, se pueden usar formas abreviadas:
 
+```
+web-service
+web-service.desarrollo
+```
+
+Esto permite que las aplicaciones se comuniquen entre sí sin conocer direcciones IP ni preocuparse por reinicios o escalados.
+
+### ¿Qué devuelve el DNS de un Service?
+
+Depende del tipo de Service:
+
+#### Service `ClusterIP`
+
+* El DNS resuelve a una **IP virtual estable**.
+* Esa IP balancea el tráfico entre todos los Pods asociados.
+
+```
+web-service → ClusterIP → Pods
+```
+
+Es el comportamiento más común y el recomendado para la mayoría de aplicaciones.
+
+---
+
+#### Service **Headless** (`clusterIP: None`)
+
+* El DNS **no devuelve una IP virtual**.
+* Devuelve directamente **las IPs de los Pods**.
+
+Esto se utiliza principalmente con **StatefulSets**, donde cada Pod necesita ser accesible de forma individual.
+
+### Ejemplo práctico real
+
+Supongamos:
+
+* Backend: `api-service`
+* Base de datos: `db-service`
+* Namespace: `desarrollo`
+
+El backend se conecta a la base de datos usando:
+
+```
+db-service.desarrollo.svc.cluster.local
+```
+
+Si los Pods de la base de datos:
+
+* se reinician
+* se escalan
+* cambian de nodo
+
+👉 La aplicación **sigue funcionando**, porque el DNS del Service permanece estable.
 
 ## Services y Readiness Probes
 

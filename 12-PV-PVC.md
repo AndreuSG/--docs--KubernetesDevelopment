@@ -1,4 +1,4 @@
-# 12. Almacenamiento Persistente en Kubernetes (PV & PVC)
+# Almacenamiento Persistente en Kubernetes (PV & PVC)
 
 Los Pods son efímeros: pueden morir, reiniciarse o moverse de nodo en cualquier momento.
 Por eso, si tu aplicación necesita **persistir datos** (bases de datos, uploads, logs, almacenamiento compartido…), no puedes depender de un volumen ligado al Pod. Necesitas almacenamiento que **no desaparezca**.
@@ -7,9 +7,7 @@ Para eso existen los **PersistentVolumes (PV)** y los **PersistentVolumeClaims (
 
 Este capítulo explica cómo funcionan, cómo crear almacenamiento persistente y cómo conectarlo a tus Pods.
 
----
-
-# 12.1. ¿Qué es un PersistentVolume (PV)?
+## ¿Qué es un PersistentVolume (PV)?
 
 Un **PersistentVolume (PV)** es un recurso del clúster que representa un espacio físico de almacenamiento.
 
@@ -27,9 +25,7 @@ Puede provenir de:
 
 El PV existe **independientemente** de los Pods.
 
----
-
-# 12.2. ¿Qué es un PersistentVolumeClaim (PVC)?
+## ¿Qué es un PersistentVolumeClaim (PVC)?
 
 Un **PVC** es una “petición de almacenamiento”.
 
@@ -43,9 +39,7 @@ Regla mental:
 
 Kubernetes se encarga de unir (“bind”) un PVC con un PV compatible.
 
----
-
-# 12.3. Flujo de uso PV → PVC → Pod
+## Flujo de uso PV → PVC → Pod
 
 1. El administrador crea un **PV**
 2. El desarrollador crea un **PVC** pidiendo X espacio y X acceso
@@ -56,9 +50,7 @@ Cadena completa:
 
 > **PV → PVC → Pod**
 
----
-
-# 12.4. Tipos de acceso (Access Modes)
+## Tipos de acceso (Access Modes)
 
 Los PV/PVC pueden tener distintos modos:
 
@@ -70,11 +62,9 @@ Los PV/PVC pueden tener distintos modos:
 
 No todos los proveedores soportan todos los modos.
 
----
+## Crear un PersistentVolume (PV)
 
-# 12.5. Crear un PersistentVolume (PV)
-
-Ejemplo sencillo usando *hostPath* (solo válido para Minikube/labs):
+Ejemplo sencillo usando *hostPath* (solo válido para Minikube/labs) Es el equivalente a un bindmount en Docker.
 
 ```yaml
 apiVersion: v1
@@ -102,9 +92,7 @@ Ver PVs:
 kubectl get pv
 ```
 
----
-
-# 12.6. Crear un PersistentVolumeClaim (PVC)
+## Crear un PersistentVolumeClaim (PVC)
 
 ```yaml
 apiVersion: v1
@@ -133,9 +121,7 @@ kubectl get pvc
 
 Si encuentra un PV compatible → estado **Bound**.
 
----
-
-# 12.7. Usar un PVC en un Pod
+## Usar un PVC en un Pod
 
 ```yaml
 apiVersion: v1
@@ -159,9 +145,9 @@ spec:
 
 Todo lo que se escriba en `/usr/share/nginx/html` **persiste** aunque el Pod muera.
 
----
 
-# 12.8. StorageClasses (aprovisionamiento dinámico)
+
+## StorageClasses (aprovisionamiento dinámico)
 
 Crear PVs manualmente es poco práctico.
 
@@ -191,9 +177,18 @@ Para ver StorageClasses disponibles:
 kubectl get storageclass
 ```
 
----
+Si queremos crear una StorageClass personalizada (ejemplo on-premise):
 
-# 12.9. Ciclo de vida de los volúmenes
+```yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: local-storage
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+```
+
+## Ciclo de vida de los volúmenes
 
 Cuando borras un PVC, depende de la política del PV:
 
@@ -203,9 +198,7 @@ Cuando borras un PVC, depende de la política del PV:
 | `Delete`      | Se borra automáticamente del proveedor (AWS, GCP…) |
 | `Recycle`     | Obsoleto                                           |
 
----
-
-# 12.10. Troubleshooting
+## Troubleshooting
 
 ### ❌ PVC en estado `Pending`
 
@@ -224,9 +217,7 @@ Causas:
 * Error tipográfico en `claimName`
 * StorageClass no existe
 
----
-
-# 12.11. Buenas prácticas
+## Buenas prácticas
 
 * Usar StorageClasses siempre que sea posible
 * No usar hostPath en producción
@@ -234,7 +225,3 @@ Causas:
 * Elegir bien el modo de acceso (RWO/RWX)
 * Definir tamaños realistas de storage
 * Usar Retain para datos críticos
-
----
-
-Con PV y PVC puedes gestionar almacenamiento persistente de forma profesional en Kubernetes. El siguiente paso será profundizar en **Probes (liveness, readiness, startup)** o continuar con **Services**, según el orden que prefieras.

@@ -2,7 +2,7 @@
 
 Los **Deployments** son el recurso más importante y utilizado en Kubernetes para desplegar aplicaciones de manera declarativa, segura y escalable. Representan la forma profesional de gestionar Pods en producción y proporcionan funcionalidades críticas como actualizaciones progresivas, rollbacks y control total sobre el ciclo de vida de la aplicación.
 
----
+
 
 ## ¿Qué es un Deployment?
 
@@ -18,7 +18,7 @@ En otras palabras:
 
 > **El Deployment es el cerebro que gestiona la aplicación; los ReplicaSets y Pods son sus piezas.**
 
----
+
 
 ## Relación Deployment → ReplicaSet → Pod
 
@@ -38,7 +38,7 @@ Cadena completa:
 
 Por eso nunca trabajamos con ReplicaSets directamente: el Deployment los gestiona por nosotros.
 
----
+
 
 ## Crear un Deployment
 
@@ -104,7 +104,7 @@ nginx-deployment-77bf8679f9-7c8b9   1/1     Running   0          101s
 nginx-deployment-77bf8679f9-snqtg   1/1     Running   0          101s
 ```
 
----
+
 
 ## Actualizaciones (Rollouts)
 
@@ -163,7 +163,7 @@ Sintaxis del nombre del pod:
 nginx-deployment-57489d7c8d-zl6sz
 ```
 
----
+
 
 ## Rollbacks (volver atrás)
 
@@ -179,7 +179,7 @@ O a una versión específica:
 kubectl rollout undo deployment/nginx-deployment --to-revision=2
 ```
 
----
+
 
 ## Estrategias de despliegue
 
@@ -213,7 +213,7 @@ strategy:
   type: Recreate
 ```
 
----
+
 
 ## Escalado de un Deployment
 
@@ -229,7 +229,7 @@ kubectl scale deployment nginx-deployment --replicas=5
 kubectl autoscale deployment nginx-deployment --cpu-percent=70 --min=1 --max=10
 ```
 
----
+
 
 ## Describir un Deployment
 
@@ -245,7 +245,7 @@ Secciones importantes:
 * Eventos
 * Especificación del Pod template
 
----
+
 
 ## Actualización mediante editar YAML
 
@@ -256,7 +256,7 @@ kubectl edit deployment nginx-deployment
 Esto abrirá el YAML en tu editor.
 Kubernetes reconciliará automáticamente los cambios.
 
----
+
 
 ## Eliminar un Deployment
 
@@ -266,7 +266,7 @@ kubectl delete deployment nginx-deployment
 
 Esto elimina también los ReplicaSets y los Pods asociados.
 
----
+
 
 ## Buenas prácticas
 

@@ -88,9 +88,7 @@ db-0.db.namespace.svc.cluster.local
 db-1.db.namespace.svc.cluster.local
 ```
 
----
-
-## 20.5. StatefulSet básico (ejemplo)
+## StatefulSet básico (ejemplo)
 
 ```yaml
 apiVersion: apps/v1
@@ -126,9 +124,7 @@ spec:
             storage: 10Gi
 ```
 
----
-
-## 20.6. `volumeClaimTemplates`
+## `volumeClaimTemplates`
 
 Esta sección es **clave** en los StatefulSets.
 
@@ -148,9 +144,7 @@ Los volúmenes:
 * NO se borran si el Pod muere
 * Persisten incluso si escalas a 0
 
----
-
-## 20.7. Escalado en StatefulSets
+## Escalado en StatefulSets
 
 ### Escalado hacia arriba
 
@@ -164,9 +158,7 @@ Los volúmenes:
 
 Esto protege la integridad del estado.
 
----
-
-## 20.8. Actualizaciones (rolling updates)
+## Actualizaciones (rolling updates)
 
 StatefulSets también soportan rolling updates, pero:
 
@@ -181,9 +173,7 @@ updateStrategy:
   type: RollingUpdate
 ```
 
----
-
-## 20.9. Borrado de StatefulSets
+## Borrado de StatefulSets
 
 ⚠️ IMPORTANTE:
 
@@ -196,8 +186,6 @@ kubectl delete statefulset db
 * **Los PVCs NO se borran**
 
 Esto evita pérdida de datos accidental.
-
----
 
 ## 20.10. Casos de uso reales
 

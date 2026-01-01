@@ -1,13 +1,15 @@
-# 19. `kubectl explain`: entender cualquier recurso en tiempo real
+# Tips para CKAD
+
+## `kubectl explain`: entender cualquier recurso en tiempo real
 
 El comando **`kubectl explain`** es una de las herramientas más potentes y menos aprovechadas de Kubernetes.
 En el examen **CKAD** (y también en el CKA) es un **salvavidas**, porque te permite consultar la **documentación oficial del API de Kubernetes directamente desde el clúster**, sin salir de la terminal.
 
 Este capítulo explica cómo usarlo correctamente y cómo sacarle el máximo partido en un examen.
 
----
 
-## 19.1. ¿Qué es `kubectl explain`?
+
+### ¿Qué es `kubectl explain`?
 
 `kubectl explain` muestra la **estructura exacta de los recursos Kubernetes** tal y como están definidos en el API Server:
 
@@ -20,9 +22,7 @@ Es, literalmente:
 
 > 📘 **La documentación oficial de Kubernetes en formato CLI**
 
----
-
-## 19.2. ¿Por qué es clave para el CKAD?
+### ¿Por qué es clave para el CKAD?
 
 En el CKAD:
 
@@ -38,9 +38,7 @@ En el CKAD:
 
 👉 En el examen, **es totalmente válido y recomendado usarlo**.
 
----
-
-## 19.3. Uso básico
+### Uso básico
 
 ```bash
 kubectl explain pod
@@ -51,9 +49,7 @@ Salida típica:
 * Descripción del recurso
 * Campos principales (`metadata`, `spec`, `status`)
 
----
-
-## 19.4. Navegar por la jerarquía del YAML
+### Navegar por la jerarquía del YAML
 
 La verdadera potencia está en navegar por los campos.
 
@@ -87,9 +83,7 @@ resources:
     memory: string
 ```
 
----
-
-## 19.5. Ver campos obligatorios
+### Ver campos obligatorios
 
 Usa `--recursive` para ver toda la estructura:
 
@@ -104,9 +98,7 @@ Muy útil para:
 * Ingress
 * HPA
 
----
-
-## 19.6. Ejemplo práctico (CKAD real)
+### Ejemplo práctico (CKAD real)
 
 ### Objetivo:
 
@@ -134,59 +126,86 @@ kubectl explain deployment.spec.template.spec.containers.resources
 
 4️⃣ Escribir el YAML con confianza.
 
----
 
-## 19.7. `kubectl explain` vs documentación web
+## Redireccionar la salida a un archivo
 
-| Web                      | kubectl explain         |
-| ------------------------ | ----------------------- |
-| Lento                    | Instantáneo             |
-| Requiere navegador       | Solo terminal           |
-| Puede variar por versión | Coincide con tu clúster |
-| Distracciones            | 100% enfocado           |
-
-En examen, **kubectl explain es superior**.
-
----
-
-## 19.8. Errores comunes
-
-### ❌ Pensar que hay que memorizar YAML
-
-No. Usa `kubectl explain`.
-
-### ❌ No profundizar en los campos
-
-`kubectl explain pod` no es suficiente.
-
-### ❌ Usar documentación de otra versión
-
-`kubectl explain` siempre muestra la versión correcta.
-
----
-
-## 19.9. Tips específicos para CKAD
-
-* Usa `kubectl explain` **antes de escribir YAML**
-* Navega por el recurso hasta el campo exacto
-* Copia mentalmente la estructura
-* Combínalo con `kubectl apply -f -`
-* No pierdas tiempo dudando si un campo existe
-
-Ejemplo rápido:
+En un entorno de examen, puede ser útil guardar la salida de un comando con dry-run:
 
 ```bash
-kubectl explain service.spec.ports
+kubectl create deployment nginx --image=nginx --dry-run=client -o yaml > nginx-deployment.yaml
 ```
 
----
+Luego, puedes usar `kubectl explain` para completar los detalles faltantes en el archivo YAML generado.
 
-## 19.10. Resumen
 
-* `kubectl explain` es la documentación oficial del API
-* Es una herramienta clave para CKAD
-* Permite escribir YAMLs correctos sin memorizar
-* Reduce errores y ahorra tiempo
-* Siempre refleja la versión real del clúster
+### Todos los dry-run que necesitas:
 
-Dominar `kubectl explain` es una ventaja competitiva clara en el examen CKAD y en el día a día profesional.
+Genera rápidamente los manifiestos YAML de los recursos más comunes y guárdalos en archivos para editarlos:
+
+#### Pod
+```bash
+kubectl run nginx --image=nginx --dry-run=client -o yaml > pod.yaml
+```
+
+#### Deployment
+```bash
+kubectl create deployment nginx --image=nginx --replicas=2 --dry-run=client -o yaml > deployment.yaml
+```
+
+#### Service (ClusterIP)
+```bash
+kubectl expose deployment nginx --port=80 --target-port=80 --dry-run=client -o yaml > svc.yaml
+```
+
+#### ConfigMap
+```bash
+kubectl create configmap mi-config --from-literal=clave=valor --dry-run=client -o yaml > configmap.yaml
+```
+
+#### Secret
+```bash
+kubectl create secret generic mi-secret --from-literal=clave=valor --dry-run=client -o yaml > secret.yaml
+```
+
+#### PersistentVolumeClaim
+```bash
+kubectl create pvc mi-pvc --storage=1Gi --access-modes=ReadWriteOnce --dry-run=client -o yaml > pvc.yaml
+```
+
+#### Job
+```bash
+kubectl create job mi-job --image=busybox --dry-run=client -o yaml > job.yaml
+```
+
+#### CronJob
+```bash
+kubectl create cronjob mi-cron --image=busybox --schedule="*/1 * * * *" --dry-run=client -o yaml > cronjob.yaml
+```
+
+#### Namespace
+```bash
+kubectl create namespace mi-namespace --dry-run=client -o yaml > ns.yaml
+```
+
+#### Ingress
+```bash
+kubectl create ingress mi-ingress --rule="host.com/path=svc:80" --dry-run=client -o yaml > ingress.yaml
+```
+
+#### NetworkPolicy
+```bash
+kubectl create networkpolicy mi-np --pod-selector=app=nginx --policy-types=Ingress --dry-run=client -o yaml > np.yaml
+```
+
+#### StatefulSet
+```bash
+kubectl create statefulset mi-sts --image=nginx --replicas=2 --dry-run=client -o yaml > sts.yaml
+```
+
+#### Horizontal Pod Autoscaler
+```bash
+kubectl autoscale deployment nginx --cpu-percent=50 --min=1 --max=5 --dry-run=client -o yaml > hpa.yaml
+```
+
+> Edita los archivos generados según lo que te pidan en el examen. ¡Ahorra tiempo y evita errores!
+

@@ -1,4 +1,4 @@
-# 18. Ingress en Kubernetes
+# Ingress en Kubernetes
 
 Un **Ingress** es el componente que permite exponer **múltiples aplicaciones HTTP/HTTPS** a través de una única IP externa, con reglas basadas en dominios y rutas.
 
@@ -11,9 +11,7 @@ Es uno de los recursos más importantes para entornos reales y producción, ya q
 * Balanceo de carga L7
 * Reglas avanzadas para APIs, microservicios y frontends
 
----
-
-# 18.1. ¿Qué es un Ingress?
+## ¿Qué es un Ingress?
 
 Un Ingress es un conjunto de **reglas HTTP/HTTPS** que se apoyan en un **Ingress Controller** para dirigir tráfico hacia Services dentro del clúster.
 
@@ -25,9 +23,7 @@ Piensa en él como:
 
 El Ingress NO funciona solo: necesita un **Ingress Controller**.
 
----
-
-# 18.2. ¿Qué es un Ingress Controller?
+## ¿Qué es un Ingress Controller?
 
 El Ingress Controller es el componente que interpreta las reglas Ingress y realiza el routing real.
 
@@ -36,8 +32,6 @@ Controladores más usados:
 * **NGINX Ingress Controller (el estándar)**
 * Traefik
 * HAProxy
-* Istio Gateway (en service mesh)
-* Kong Ingress Controller
 
 Para Minikube:
 
@@ -45,9 +39,7 @@ Para Minikube:
 minikube addons enable ingress
 ```
 
----
-
-# 18.3. Arquitectura Ingress
+## Arquitectura Ingress
 
 ```
  Client
@@ -65,9 +57,7 @@ minikube addons enable ingress
 
 El tráfico NO llega directamente al Pod ni al Service sin pasar por el Controller.
 
----
-
-# 18.4. Crear un Ingress básico
+## Crear un Ingress básico
 
 Service previo:
 
@@ -108,9 +98,7 @@ spec:
 **Resultado:**
 Todas las peticiones a `ejemplo.com` → `web-service`.
 
----
-
-# 18.5. Routing basado en paths
+## Routing basado en paths
 
 ```yaml
 spec:
@@ -136,9 +124,7 @@ spec:
 
 Permite que múltiples microservicios compartan una sola IP.
 
----
-
-# 18.6. Routing basado en dominios
+## Routing basado en dominios
 
 ```yaml
 spec:
@@ -165,9 +151,7 @@ spec:
                   number: 80
 ```
 
----
-
-# 18.7. TLS/HTTPS en Ingress
+## TLS/HTTPS en Ingress
 
 Para habilitar HTTPS se usa un Secret TLS:
 
@@ -187,9 +171,7 @@ spec:
 
 Así el Ingress Controller termina TLS (SSL offloading).
 
----
-
-# 18.8. Redirección HTTP → HTTPS
+## Redirección HTTP → HTTPS
 
 ```yaml
 metadata:
@@ -197,9 +179,7 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
 ```
 
----
-
-# 18.9. Reescritura de paths (path rewriting)
+## Reescritura de paths (path rewriting)
 
 ```yaml
 metadata:
@@ -220,35 +200,14 @@ spec:
 
 Permite mapear rutas internas sin cambiar la URL externa.
 
----
-
-# 18.10. Health checks
+## Health checks
 
 NGINX realiza sus propios health checks internos hacia el Service.
 
 Si los Pods no están en `Ready=True`, el Ingress NO les envía tráfico.
 
----
 
-# 18.11. Integración con LoadBalancer y MetalLB
-
-Si estás en cloud:
-
-* Un Ingress Controller crea automáticamente un `LoadBalancer` externo
-
-On-prem con MetalLB:
-
-* El Ingress Controller se expone con un Service tipo `LoadBalancer`
-
-Ejemplo:
-
-```bash
-kubectl get svc -n ingress-nginx
-```
-
----
-
-# 18.12. Troubleshooting
+## Troubleshooting
 
 ### ❌ 404 Not Found
 
@@ -266,9 +225,7 @@ kubectl get svc -n ingress-nginx
 * El Service no tiene endpoints
 * Los Pods están NotReady
 
----
-
-# 18.13. Buenas prácticas
+## Buenas prácticas
 
 * Un solo Ingress Controller por clúster
 * Organizar reglas por dominios y paths
@@ -276,9 +233,7 @@ kubectl get svc -n ingress-nginx
 * Comprobar que los Services tienen endpoints antes de depurar Ingress
 * Ver logs del Ingress Controller para errores de routing
 
----
-
-# 18.14. Resumen
+## Resumen
 
 Los Ingress permiten exponer múltiples aplicaciones HTTP/HTTPS mediante una única IP y reglas avanzadas basadas en paths y hostnames.
 Son esenciales en entornos modernos y completan toda la capa de networking de Kubernetes junto con Services y Network Policies.
