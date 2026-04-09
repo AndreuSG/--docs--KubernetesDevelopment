@@ -4,23 +4,11 @@ Comprender Kubernetes implica entender **cómo está diseñado internamente**, q
 
 ## etcd: la base de datos del estado
 
-`etcd` es una **base de datos distribuida clave-valor** que almacena absolutamente todo el **estado del clúster**.
+`etcd` es una **base de datos distribuida de tipo clave-valor** donde Kubernetes guarda absolutamente todo el estado del clúster: Pods, Services, Deployments, Secrets, ConfigMaps…
 
-Qué guarda:
+Es el componente más crítico del Control Plane: si `etcd` falla, el clúster pierde toda capacidad de operar. En producción siempre se ejecuta en alta disponibilidad y con backups periódicos.
 
-* Especificación completa de recursos (Pods, Services, Deployments, Secrets, ConfigMaps…)
-* Estado deseado del clúster
-* Información de control y coordinación
-
-Por qué es crítico:
-
-* Es **altamente consistente** (usa Raft para consenso)
-* Es el "punto único de verdad" del clúster
-* Si `etcd` falla, el clúster no puede operar
-
-Ejemplo claro:
-
-> Cuando haces `kubectl apply -f app.yaml`, esa declaración se guarda en `etcd`. El resto de componentes trabajan para hacerla realidad.
+> Documentación completa en [021-etcd.md](021-etcd.md).
 
 ## Componentes del Control Plane
 
@@ -58,6 +46,7 @@ Cómo funciona el proceso:
 2. El `kubelet` del nodo recibe la orden.
 3. El runtime ejecuta los contenedores.
 4. El `kubelet` informa del estado al apiserver.
+5. Etcd se actualiza con el nuevo estado.
 
 ## Pods del sistema (`kube-system`)
 
