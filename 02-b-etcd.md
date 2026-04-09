@@ -2,11 +2,10 @@
 
 ## ¿Qué es etcd?
 
-`etcd` es una **base de datos distribuida de tipo clave-valor**, desarrollada por CoreOS (hoy parte de Red Hat) y actualmente un proyecto graduado de la CNCF. Es el componente donde Kubernetes guarda **absolutamente todo el estado del clúster**.
+`etcd` es una **base de datos distribuida de tipo clave-valor**
+Es el componente donde Kubernetes guarda **absolutamente todo el estado del clúster**.
 
 Sin `etcd`, Kubernetes no tiene memoria: no sabe qué Pods existen, qué está corriendo, qué se ha declarado ni qué hay que hacer.
-
----
 
 ## Bases de datos SQL vs clave-valor: ¿por qué no SQL?
 
