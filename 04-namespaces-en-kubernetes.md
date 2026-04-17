@@ -44,7 +44,7 @@ Kubernetes crea algunos namespaces automáticamente:
 kubectl create namespace desarrollo
 ```
 
-### Forma 2: manifiesto YAML
+### Forma 2: manifiesto YAML (recomendado para entornos reales)
 
 ```yaml
 apiVersion: v1
@@ -112,11 +112,9 @@ El namespace `default` es el que se usa si no especificas ninguno. Pero cuidado,
 
 ## Buenas prácticas con namespaces
 
-* Un namespace para cada entorno: `dev`, `pre`, `prod`.
-* O crear un namespace para cada proyecto u organización.
+* Crear un namespace para cada proyecto u organización.
+* O un namespace para cada entorno: `dev`, `pre`, `prod`.
 * Usar ResourceQuota para limitar recursos por equipo.
 * Usar RBAC para separar accesos entre equipos.
 * No desplegar apps en `default`.
 * Mantener `kube-system` solo para componentes internos.
-
-Los namespaces son el punto de partida para estructurar un clúster real. Ahora que conoces cómo aislar recursos, el siguiente paso natural es profundizar en los Pods y, después, avanzar hacia Deployments, Services e Ingress.
