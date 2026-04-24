@@ -50,10 +50,6 @@ kind: Deployment
 metadata:
   name: nginx-deployment
 spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: nginx
   template:
     metadata:
       labels:
@@ -64,6 +60,10 @@ spec:
           image: nginx:1.25
           ports:
             - containerPort: 80
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
 ```
 
 Aplicar:
@@ -249,12 +249,19 @@ Secciones importantes:
 
 ## Actualización mediante editar YAML
 
+La forma **recomendada** es editar el archivo YAML local y reaplicarlo:
+
+```bash
+kubectl apply -f nginx-deployment.yaml
+```
+
+Así el YAML es siempre la fuente de verdad y los cambios quedan versionados en Git.
+
+`kubectl edit` edita el objeto directamente en el clúster sin tocar tu archivo local, por lo que el YAML queda desincronizado con el estado real. Úsalo solo para debugging o emergencias puntuales.
+
 ```bash
 kubectl edit deployment nginx-deployment
 ```
-
-Esto abrirá el YAML en tu editor.
-Kubernetes reconciliará automáticamente los cambios.
 
 
 

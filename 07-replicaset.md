@@ -1,6 +1,8 @@
 # ReplicaSets en Kubernetes
 
-Los **ReplicaSets** son un recurso fundamental en Kubernetes, pero rara vez se gestionan directamente, normalmente se manejan a través de Deployments. Su función es asegurar que siempre exista el **número deseado de Pods** ejecutándose.
+Los **ReplicaSets** son un recurso fundamental en Kubernetes, pero rara vez se gestionan directamente, normalmente se manejan a través de Deployments. 
+
+Su función es asegurar que siempre exista el **número deseado de Pods** ejecutándose.
 
 Este documento explica qué son, cómo funcionan y por qué se utilizan principalmente como parte interna de un Deployment.
 
@@ -48,10 +50,10 @@ Porque los **Deployments** son una capa superior que añade funciones esenciales
 
 Un ReplicaSet *no puede*:
 
-❌ Hacer rollouts
-❌ Hacer rollbacks
-❌ Gestionar versiones
-❌ Actualizar contenedores sin borrar Pods manualmente
+- Hacer rollouts
+- Hacer rollbacks
+- Gestionar versiones
+- Actualizar contenedores sin borrar Pods manualmente
 
 Por eso, la práctica profesional es:
 
@@ -90,10 +92,6 @@ kind: ReplicaSet
 metadata:
   name: nginx-rs
 spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: nginx
   template:
     metadata:
       labels:
@@ -102,6 +100,10 @@ spec:
       containers:
         - name: nginx
           image: nginx:latest
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
 ```
 
 Aplicar:
@@ -182,12 +184,48 @@ kubectl delete rs nombre-del-rs
 
 
 
+## ⚠️ Peligro en producción: adopción involuntaria de Pods por el selector
+
+El `selector` de un ReplicaSet **no filtra por el YAML que aplicaste**, sino por el namespace completo. Esto significa que cualquier Pod que ya exista en el namespace con el mismo label será **adoptado automáticamente** por el ReplicaSet.
+
+### ¿Qué puede salir mal?
+
+**Escenario 1 — Eliminación de pods de otra aplicación:**
+
+Tienes ya 5 pods corriendo con `app: nginx` (son de otro servicio). Aplicas un ReplicaSet con `replicas: 3` y `selector: app: nginx`. Kubernetes contará esos 5 pods como "suyos" y **eliminará 2** para ajustarse al número deseado, rompiendo el otro servicio.
+
+**Escenario 2 — Infra-escalado silencioso:**
+
+Tienes ya 2 pods con `app: nginx`. Aplicas un ReplicaSet con `replicas: 3`. Solo se crea **1 pod nuevo** en lugar de 3. El sistema parece correcto, pero no tienes las réplicas que esperabas, lo que puede ser crítico bajo carga.
+
+### Regla de oro en producción
+
+> **Nunca uses labels genéricos como `app: nginx`.** Usa labels específicos y únicos por aplicación, entorno y versión:
+
+```yaml
+labels:
+  app: nginx-frontend
+  env: production
+  version: v1.4.2
+```
+
+Y en el `selector`, incluye siempre todas las dimensiones relevantes:
+
+```yaml
+selector:
+  matchLabels:
+    app: nginx-frontend
+    env: production
+```
+
+Así evitas que un ReplicaSet adopte accidentalmente pods que no le pertenecen.
+
 ## Buenas prácticas
 
 * No crear ReplicaSets directamente (usar Deployments)
 * Solo manipularlos para fines de aprendizaje o debugging
 * Nunca escalar un ReplicaSet que depende de un Deployment
-* Usar labels claras y selectores bien definidos
+* Usar labels específicos y únicos por aplicación, entorno y versión para evitar adopciones involuntarias
 
 ---
 
