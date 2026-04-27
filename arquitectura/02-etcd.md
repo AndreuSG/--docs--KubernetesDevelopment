@@ -61,7 +61,7 @@ En Kubernetes, todas las claves siguen una jerarquía de rutas bajo `/registry/`
 | **Alta disponibilidad** | Requiere soluciones externas | Integrada en el propio protocolo |
 | **Adecuado para** | Datos relacionales, reporting, negocio | Coordinación distribuida, configuración, estado |
 
-![etcd](img/etcd.png)
+![etcd](../img/etcd.png)
 
 ### ¿Por qué etcd gana para Kubernetes?
 

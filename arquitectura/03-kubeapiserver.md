@@ -22,7 +22,7 @@ A continuación se explica paso a paso lo que ocurre cuando ejecutas:
 kubectl get nodes
 ```
 
-![Get nodes](img/get-nodes-case.png)
+![Get nodes](../img/get-nodes-case.png)
 
 ## 1\. El cliente hace la petición
 
@@ -130,7 +130,7 @@ curl -X POST /api/v1/namespaces/default/pods
 
 A diferencia de `get`, aquí **sí hay cambios en el estado del cluster**.
 
-![Create Pod](img/create-pod-case.png)
+![Create Pod](../img/create-pod-case.png)
 
 ## 1\. Petición al kube-apiserver
 

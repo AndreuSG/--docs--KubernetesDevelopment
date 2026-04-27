@@ -60,8 +60,8 @@ Expone la aplicación **dentro del clúster**. Ideal para comunicación entre mi
 En este ejemplo, creamos un Service que apunta a Pods con el label `app: web` en el puerto 80. Por defecto, el tipo es `ClusterIP`.
 
 ```yaml
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
   name: web-service
 spec:
