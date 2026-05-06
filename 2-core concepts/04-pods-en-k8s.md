@@ -47,7 +47,7 @@ metadata:
 spec:
   containers:
     - name: nginx
-      image: nginx:latest
+      image: harbor.cdmon.tech/netboot:v1.0.3
       ports:
         - containerPort: 80
 ```

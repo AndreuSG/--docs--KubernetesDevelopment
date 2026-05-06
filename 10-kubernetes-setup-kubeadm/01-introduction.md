@@ -13,20 +13,18 @@ Solo instalamos:
 * kubelet → agente que corre en cada nodo
 * kubectl → cliente para interactuar con el cluster
 
----
-
-## ⚠️ Requisitos previos
+## Requisitos previos
 
 ### Sistema
 
-* Linux (Ubuntu 22.04 recomendado)
+* Linux (Ubuntu 24.04 recomendado)
 * 2 CPU mínimo
-* 2 GB RAM mínimo (recomendado 4 GB)
+* 4 GB RAM mínimo
 
 ### Red
 
 * Conectividad entre nodos
-* IP fija recomendada
+* IP fija
 
 ### Identidad única
 
@@ -43,23 +41,7 @@ ip link
 sudo cat /sys/class/dmi/id/product_uuid
 ```
 
----
-
-## 🧠 Concepto clave
-
-kubeadm NO instala Kubernetes completo automáticamente.
-
-Solo prepara el cluster.
-
-Tú necesitas:
-
-* container runtime
-* red (CNI)
-* balanceo (en HA)
-
----
-
-## 🔧 Paso 1 — Preparar el sistema
+## Paso 1 — Preparar el sistema
 
 Desactivar swap:
 
@@ -71,7 +53,7 @@ sudo swapoff -a
 
 ---
 
-## 🔧 Paso 2 — Instalar dependencias
+## Paso 2 — Instalar dependencias
 
 ```
 sudo apt-get update
@@ -80,7 +62,7 @@ sudo apt-get install -y apt-transport-https ca-certificates curl gpg
 
 ---
 
-## 🔧 Paso 3 — Añadir repo de Kubernetes
+## Paso 3 — Añadir repo de Kubernetes
 
 Crear keyring:
 
@@ -104,7 +86,7 @@ echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.
 
 ---
 
-## 🔧 Paso 4 — Instalar kubelet, kubeadm y kubectl
+## Paso 4 — Instalar kubelet, kubeadm y kubectl
 
 ```
 sudo apt-get update
@@ -119,7 +101,7 @@ sudo apt-mark hold kubelet kubeadm kubectl
 
 ---
 
-## 🔧 Paso 5 — Activar kubelet
+## Paso 5 — Activar kubelet
 
 ```
 sudo systemctl enable --now kubelet
